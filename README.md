@@ -72,17 +72,24 @@ fetes.
 
 ### El domini
 
-`loskaplan.org` està registrat a IONOS, i el correu de l'associació també hi viu (els MX
-apunten a `mx00`/`mx01.ionos.es`). Per això el DNS es queda a IONOS i només s'hi afegeixen
-els registres del web —els del correu no es toquen:
+`loskaplan.org` està registrat a IONOS, i el correu de l'associació també hi viu: hi ha
+set registres de `Mail` (dos MX, l'SPF, el DMARC, dos DKIM i l'autodiscover). Per això el
+DNS es queda a IONOS —moure els nameservers voldria dir migrar-los tots— i només s'hi
+canvien els del web:
 
-| Tipus | Nom   | Valor                                                        |
-| ----- | ----- | ------------------------------------------------------------ |
-| A     | `@`   | `185.199.108.153` `185.199.109.153` `185.199.110.153` `185.199.111.153` |
-| CNAME | `www` | `loskaplan.github.io`                                        |
+| Tipus | Nom   | Valor                                                                              |
+| ----- | ----- | ---------------------------------------------------------------------------------- |
+| A     | `@`   | `185.199.108.153` `185.199.109.153` `185.199.110.153` `185.199.111.153`             |
+| AAAA  | `@`   | `2606:50c0:8000::153` `2606:50c0:8001::153` `2606:50c0:8002::153` `2606:50c0:8003::153` |
+| CNAME | `www` | `loskaplan.github.io`                                                              |
 
-Hi ha un registre A cap a `217.160.0.176` (la web vella del creador de pàgines d'IONOS)
-que cal esborrar, o el domini seguirà resolent allà.
+Els AAAA no són opcionals: si es deixen apuntant a IONOS, qui navegui per IPv6 continua
+veient la web vella.
+
+Abans cal desconnectar el domini de **Click and Build** (el creador de pàgines d'IONOS)
+des d'**Ajustar destino**. Mentre hi estigui connectat, els seus quatre registres —`A @`,
+`AAAA @`, `A www`, `AAAA www`, tots cap a `217.160.0.176` / `2001:8d8:100f:f000::2e7`—
+surten sense icona de paperera i no es deixen esborrar.
 
 Quan els registres ja resolguin, i no abans, posa el domini a **Settings → Pages → Custom
 domain**: GitHub el rebutja si encara no apunta cap als seus servidors. Marca **Enforce
