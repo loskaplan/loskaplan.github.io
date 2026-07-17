@@ -22,7 +22,7 @@ Incloure i promoure expressions artístiques com la música, el disseny, la foto
 el cinema, el multimèdia i altres formes relacionades amb la intersecció entre art i
 tecnologia.
 
-### Promoció econòmica i comercial
+### Sosteniment econòmic
 
 Desenvolupar activitats econòmiques, com la venda de productes de marxandatge o altres
 béns vinculats als objectius culturals, artístics i educatius de l’associació, sempre
