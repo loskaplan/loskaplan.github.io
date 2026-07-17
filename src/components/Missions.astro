@@ -132,7 +132,22 @@ const missions = [
       });
     }
 
-    activa(0);
+    /* La foto de la primera s'encén de seguida: és el primer que entra a pantalla i, si
+       no, es veuria pujar un marc buit. */
+    fotos[0].classList.add('is-actiu');
+
+    /* La frase, no. Abans aquí hi havia un activa(0) que s'executava en carregar, amb la
+       secció mil píxels més avall: el tecleig (fins a 880ms de retards) es gastava sencer
+       abans que ningú el veiés, i quan hi arribaves ja feia estona que estava escrita.
+       I no es tornava a disparar mai: quan el sentinella 0 creuava la línia, el toggle li
+       reposava una classe que ja hi era i el CSS no en feia res.
+       Ara s'encén quan el bloc de frases entra a pantalla, que és on es pot veure. */
+    var arrenca = new IntersectionObserver(function (entrades) {
+      if (!entrades[0].isIntersecting) return;
+      activa(0);
+      arrenca.disconnect();
+    });
+    arrenca.observe(seccio.querySelector('.missions__list'));
 
     var io = new IntersectionObserver(
       function (entrades) {

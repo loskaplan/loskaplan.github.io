@@ -225,6 +225,23 @@ h2 {
   top: 0;
   z-index: 5;
   transition: color 200ms ease;
+  /* El color del vel de sota: el del FONS que hi ha al darrere, no el de la tinta. */
+  --vel: var(--paper);
+}
+
+/* Un vel, només quan la capçalera es compacta —que és quan hi ha contingut passant-li per
+   sota. A escriptori no calia: les seccions tenen aire de sobres i no s'hi arriba a tocar
+   res. A 375px el logo queda plantat damunt del text; el titular del Venn hi passa per
+   dins.
+   Degradat i no banda: una vora dura dibuixaria una caixa que no hi ha. El paper s'esvaeix
+   cap avall i el contingut hi entra per sota sense que res el talli. */
+.site-header--compacta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, var(--vel) 45%, transparent);
+  pointer-events: none;
 }
 
 .header-sentinel {
@@ -245,6 +262,9 @@ h2 {
    la tinta desapareixeria damunt del negre. */
 .site-header--fosca {
   color: var(--paper);
+  /* Sobre les seccions fosques el vel també s'ha de girar, o seria una banda clara
+     enmig del negre. */
+  --vel: var(--ink);
 }
 
 /* En baixar es queda només el logo i el vúmetre. El text no s'esborra: s'amaga
@@ -272,10 +292,15 @@ h2 {
   }
 }
 
+/* Mateix problema que el botó del menú: compactat es queda amb el logo sol, 28×28px.
+   Mateixa solució —padding per créixer, marge negatiu per no moure res. */
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  min-height: 44px;
   text-decoration: none;
   font-size: 1.0625rem;
   font-weight: 600;
@@ -288,13 +313,23 @@ h2 {
   border-radius: 3px;
 }
 
+/* L'àrea que ha de tocar el dit no és la del dibuix. En compactar-se, el text «Menú» surt
+   del flux i el botó es queda amb el vúmetre sol: 15×22px mesurats: tres barres de 3px i
+   dos buits de 3px. És l'única navegació que hi ha a mòbil, i es compacta al primer píxel
+   d'scroll. El mínim per a un dit són 44×44.
+   El padding fa créixer la zona sensible i el marge negatiu la torna a treure del flux:
+   el vúmetre no es mou ni un píxel de lloc, però ara s'hi pot encertar. */
 .menu-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.75rem;
   background: none;
   border: 0;
-  padding: 0.25rem 0;
+  padding: 0.75rem;
+  margin: -0.75rem;
+  min-width: 44px;
+  min-height: 44px;
   color: inherit;
   font-family: inherit;
   cursor: pointer;
@@ -487,6 +522,28 @@ h2 {
 /* En pantalla estreta no hi ha sobrant per repartir: el text ja omple la línia i la
    foto quedaria una tira de dos dits. Tornen a ser bandes senceres entre línies. */
 @media (max-width: 48rem) {
+  /* L'aire es va calibrar contra un titular de 126px i se l'ha quedat un de 44: el clamp
+     del cos té el valor preferit en vw i a 375px el vw (33,8) queda per sota del mínim,
+     de manera que el cos es congela mentre l'aire, que va en vh, segueix viu. Resultat
+     mesurat: 292px de padding (36% de la pantalla) al voltant d'un titular que ja no és
+     un cartell, i un bloc de 937px que no cap en els 812 de la finestra —just el contrari
+     del que demana el comentari de sobre.
+     Amb aquests valors: 76 de capçalera + 49 + 598 + 65 = 788px. Hi cap. */
+  .broadsheet {
+    padding-block: clamp(1.5rem, 6vh, 4rem) clamp(2rem, 8vh, 5rem);
+  }
+
+  /* El min(80vw, 1060px) és un recurs d'escriptori: allà retalla 1120 a 1060 i el bloc
+     respira. A 375px, el 80vw són 300 dins d'un .wrap que ja aparta 20 per banda —37,5px
+     de marge acumulat a cada costat, un 20% de la pantalla— i és el que obliga el cos a
+     quedar-se petit. A mòbil el marge ja el posa el .wrap; el titular ha de tocar les
+     dues vores.
+     52px i no 44: la línia més llarga («seves formes») fa 299px dels 335 disponibles. */
+  .broadsheet h1 {
+    font-size: clamp(3.25rem, 9vw, 8.5rem);
+    max-width: 100%;
+  }
+
   .broadsheet__line {
     display: block;
   }
@@ -725,8 +782,17 @@ h2 {
    dins. El navegador fa l'ancoratge tot sol —no hi ha cap listener d'scroll— i les
    frases es van rellevant a mesura que baixes. */
 .missions--animada .missions__track {
+  /* L'escena s'enganxa des que el track toca el capdamunt fins que la seva vora inferior
+     arriba a la de l'escena: o sigui --track MENYS l'alçada de l'escena. Aquest tros és
+     l'únic que es veu enganxat, i és el que s'ha de repartir entre les tres missions.
+     Es calcula i no es pica a mà perquè abans no quadrava: els sentinelles enrajolaven
+     els 300vh sencers del track mentre el recorregut enganxat només n'és 200, i el
+     repartiment sortia 1/2/1 —la segona missió durava el doble que les altres dues. */
+  --track: 300vh;
+  --enganxat: calc(var(--track) - 100svh);
+  --pas: calc(var(--enganxat) / 3);
   position: relative;
-  height: 300vh;
+  height: var(--track);
 }
 
 .missions--animada .missions__stage {
@@ -734,7 +800,19 @@ h2 {
   top: 0;
   display: flex;
   align-items: center;
-  min-height: 100vh;
+  /* svh i no vh: a iOS i Android el vh es mesura amb les barres del navegador amagades,
+     de manera que l'escena queda ~100px més alta del que es veu i el contingut, centrat,
+     baixa mig d'aquests 100 —el botó «Llegir el manifest» quedava tallat per sota. */
+  min-height: 100svh;
+}
+
+/* A mòbil el recurs costava 2.436px: mitja portada, tres pantalles de swipe per tres
+   frases. 180vh en són 1.462, i el tros enganxat surt a ~27vh per missió: un cop de dit
+   cadascuna. */
+@media (max-width: 60rem) {
+  .missions--animada .missions__track {
+    --track: 180vh;
+  }
 }
 
 .missions--animada .missions__list {
@@ -800,22 +878,26 @@ h2 {
   opacity: 1;
 }
 
+/* Enrajolen el tros ENGANXAT, no el track sencer. El 50svh de sortida és perquè la línia
+   de detecció de l'IO va al mig de la finestra (rootMargin -50%/-50%): cada sentinella
+   ha de començar mig viewport més avall del punt on la seva missió ha de manar.
+   Amb això cadascuna mana exactament un --pas del recorregut enganxat. */
 .missions--animada .missions__sentinel {
   display: block;
   position: absolute;
   inset-inline: 0;
-  height: 100vh;
+  height: var(--pas);
   pointer-events: none;
 }
 
 .missions--animada .missions__sentinel[data-i='0'] {
-  top: 0;
+  top: 50svh;
 }
 .missions--animada .missions__sentinel[data-i='1'] {
-  top: 100vh;
+  top: calc(50svh + var(--pas));
 }
 .missions--animada .missions__sentinel[data-i='2'] {
-  top: 200vh;
+  top: calc(50svh + 2 * var(--pas));
 }
 
 /* Bloc de crida dins de la secció fosca. */
@@ -922,6 +1004,25 @@ h2 {
 
 .venn__core-dot {
   fill: var(--accent);
+}
+
+/* Aquests cossos són unitats del viewBox, no píxels: escalen amb el diagrama. A partir de
+   768px l'SVG topa amb el seu max-width de 34rem i no creix més —per això a escriptori
+   estan bé i ningú no ho havia vist. Però a 375px l'SVG fa 335px sobre un viewBox de 620:
+   escala 0,54, i les xifres de dalt es converteixen en 13,5px i 11,3px de pantalla.
+   «la cruïlla» és la paraula de l'associació i el centre del diagrama, i es llegia a
+   11,3px. Aquí es compensa l'escala perquè tornin a un cos llegible: 33 i 34 unitats
+   donen 17,8px i 18,4px reals a 375px.
+   Comprovat que no desborden els cercles —«Disciplines» a 33u queda just fora de la zona
+   de solapament; a 40u ja hi entraria. */
+@media (max-width: 48rem) {
+  .venn__label {
+    font-size: 33px;
+  }
+
+  .venn__core {
+    font-size: 34px;
+  }
 }
 
 /* En una sola columna el retrat 3:4 ocupa una pantalla sencera i trenca el ritme;
@@ -1199,15 +1300,28 @@ h2 {
 }
 
 /* El correu, a cos de titular: és tot el que li demanem al visitant. */
+/* El mínim del clamp és el que es veu a tot el rang mòbil: el 5,5vw no supera els
+   1,5rem fins als 436px de finestra. A 24px el correu deixava de ser un titular i es
+   quedava a 1,5× el cos —i és l'única cosa que li demanem al visitant.
+   36px: «hola@loskaplan.cat» fa 305px dels 335 disponibles a 375px. */
 .site-footer__email {
   display: block;
-  font-size: clamp(1.5rem, 5.5vw, 4rem);
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
   text-decoration: none;
   margin-bottom: 1rem;
   transition: color 140ms ease;
+}
+
+/* El -0,04em és tracking de display: correcte als 64px d'escriptori, on són -2,5px sobre
+   glifs grossos. A 36px estreny una cadena on l'@ i els punts són justament el que s'ha
+   de distingir. */
+@media (max-width: 48rem) {
+  .site-footer__email {
+    letter-spacing: -0.02em;
+  }
 }
 
 .site-footer__email:hover {

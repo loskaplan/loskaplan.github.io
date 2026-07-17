@@ -79,15 +79,19 @@ els registres del web —els del correu no es toquen:
 | Tipus | Nom   | Valor                                                        |
 | ----- | ----- | ------------------------------------------------------------ |
 | A     | `@`   | `185.199.108.153` `185.199.109.153` `185.199.110.153` `185.199.111.153` |
-| CNAME | `www` | `<usuari>.github.io`                                          |
+| CNAME | `www` | `loskaplan.github.io`                                        |
 
 Hi ha un registre A cap a `217.160.0.176` (la web vella del creador de pàgines d'IONOS)
 que cal esborrar, o el domini seguirà resolent allà.
 
-Després, a **Settings → Pages → Custom domain**, posa-hi `loskaplan.org` i marca **Enforce
-HTTPS** quan s'activi (pot trigar fins a 24 h: GitHub ha d'emetre el certificat). El domini
-surt de [`public/CNAME`](public/CNAME), i `astro.config.mjs` hi apunta amb `site`: d'allà
-surten l'URL canònica i les metadades per compartir a xarxes.
+Quan els registres ja resolguin, i no abans, posa el domini a **Settings → Pages → Custom
+domain**: GitHub el rebutja si encara no apunta cap als seus servidors. Marca **Enforce
+HTTPS** quan s'activi (pot trigar fins a 24 h: ha d'emetre el certificat).
+
+[`public/CNAME`](public/CNAME) hi és perquè ho recomana la documentació d'Astro, però amb
+desplegaments per Actions no n'hi ha prou: el domini viu als ajustos del repositori, no al
+fitxer. Qui sí que surt de `astro.config.mjs` (`site`) és l'URL canònica i les metadades
+per compartir a xarxes.
 
 ## Pendent
 

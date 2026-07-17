@@ -11,6 +11,12 @@ import festival from '../assets/festival.jpg';
 import escena from '../assets/escena.jpg';
 ---
 
+{/* El `sizes` de les quatre fotos: 106vw a mòbil, i el número no és una errada.
+    A mòbil cada foto és una banda de 22vw d'alt que ocupa tot el .wrap, i com que la foto
+    és 4,8:1 dins d'una caixa de 4,06:1, l'`object-fit: cover` l'escala MÉS ENLLÀ de la
+    caixa per cobrir-la: es pinta a 22vw × 4,8 = 106vw. El navegador no sap res de
+    l'object-fit —només llegeix el sizes—, i declarant-hi l'amplada de la caixa demanava
+    la meitat de resolució de la que li cal i les servia borroses. */}
 <Base title={site.name} description={site.description}>
   <section class="broadsheet">
     <div class="wrap">
@@ -18,28 +24,28 @@ import escena from '../assets/escena.jpg';
         <span class="broadsheet__line">
           <span class="broadsheet__words">Cultura, art</span>
           <span class="photo broadsheet__fill">
-            <Image src={exposicio} alt="" widths={[600, 1200, 2400]} sizes="45vw" loading="eager" />
+            <Image src={exposicio} alt="" widths={[600, 1200, 2400]} sizes="(max-width: 48rem) 106vw, 45vw" loading="eager" />
           </span>
         </span>
 
         <span class="broadsheet__line broadsheet__line--flip">
           <span class="broadsheet__words">i tecnologia</span>
           <span class="photo broadsheet__fill">
-            <Image src={sintetitzador} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+            <Image src={sintetitzador} alt="" widths={[600, 1200, 2400]} sizes="(max-width: 48rem) 106vw, 45vw" />
           </span>
         </span>
 
         <span class="broadsheet__line">
           <span class="broadsheet__words">en totes les</span>
           <span class="photo broadsheet__fill">
-            <Image src={festival} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+            <Image src={festival} alt="" widths={[600, 1200, 2400]} sizes="(max-width: 48rem) 106vw, 45vw" />
           </span>
         </span>
 
         <span class="broadsheet__line broadsheet__line--flip">
           <span class="broadsheet__words">seves formes</span>
           <span class="photo broadsheet__fill">
-            <Image src={escena} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+            <Image src={escena} alt="" widths={[600, 1200, 2400]} sizes="(max-width: 48rem) 106vw, 45vw" />
           </span>
         </span>
       </h1>
