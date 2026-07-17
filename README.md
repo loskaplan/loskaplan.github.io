@@ -102,9 +102,8 @@ per compartir a xarxes.
 
 ## Pendent
 
-- **Correu de contacte.** `src/config.ts` té `hola@loskaplan.cat` com a valor
-  provisional, d'un domini que no és el nostre; als estatuts no consta cap adreça. Cal
-  substituir-lo pel real.
+- **Correu de contacte.** `src/config.ts` ja té `hola@loskaplan.org`, però la bústia encara
+  s'ha de crear a IONOS. Fins llavors, el `mailto:` de contacte no arriba enlloc.
 - **Fotos.** Les de `photos/` són de Pexels, de mostra. Substituïu-les per fotos de
   l'associació quan n'hi hagi.
 - **Bilingüe.** De moment només català.

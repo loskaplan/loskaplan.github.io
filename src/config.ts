@@ -4,8 +4,7 @@ export const site = {
   description:
     "Associació sense ànim de lucre de Terrassa que promou la cultura, l’art i la tecnologia en totes les seves formes.",
 
-  // PENDENT: no consta cap adreça de correu als estatuts. Substituïu-la per la real.
-  email: 'hola@loskaplan.cat',
+  email: 'hola@loskaplan.org',
 
   address: {
     street: 'Carrer Frederic Soler, 65',
