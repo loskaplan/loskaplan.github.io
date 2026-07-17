@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+}
+
+const { src } = Astro.props;
+---
+
+{/* Foto d'obertura d'una pàgina de text: talla el mur de lletra just després del
+    titular i deixa respirar abans del cos.
+    alt="" a propòsit, com la resta de fotos del web: són atmosfera, no informació. El
+    text del costat ja ho diu tot, i descriure-les només afegiria soroll a qui escolta
+    la pàgina amb un lector de pantalla.
+    La proporció va aquí i no a la imatge: així el navegador reserva el lloc abans de
+    descarregar-la i la pàgina no fa el salt quan arriba. */}
+<figure class="banda photo">
+  <Image src={src} alt="" widths={[900, 1400, 2600]} sizes="(min-width: 87.5rem) 1288px, 92vw" />
+</figure>

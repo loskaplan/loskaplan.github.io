@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+
+import sala from '../assets/sala.jpg';
+import taller from '../assets/taller.jpg';
+import teclat from '../assets/teclat.jpg';
+---
+
+{/* El recurs que li devem al referent: la tipografia diu el que diu la frase. Allà el
+    titular de tancament posa «the Old» en una serif clàssica i «the New» en una cara
+    pixelada. Aquí la frase és la missió dels estatuts, i per això funciona encara
+    millor: l'ART en serif, la TECNOLOGIA en píxels.
+    Si algun dia es canvia aquest text, o es manté el joc o es treuen les dues cares:
+    soles, sense la frase que les justifica, són decoració. */}
+<section class="editorial reveal">
+  <div class="wrap">
+    <p class="label">La cruïlla</p>
+    <p class="editorial__statement">
+      <span class="editorial__line">
+        Pensem la cruïlla
+        <span class="photo editorial__tile editorial__tile--sala">
+          <Image src={sala} alt="" widths={[180, 360]} sizes="5vw" />
+        </span>
+        entre l’<span class="editorial__serif">art</span>
+      </span>
+
+      <span class="editorial__line">
+        <span class="photo editorial__tile editorial__tile--taller">
+          <Image src={taller} alt="" widths={[320, 640]} sizes="11vw" />
+        </span>
+        i la <span class="editorial__pixel">tecnologia</span><span class="mark"></span>
+        <span class="photo editorial__tile editorial__tile--teclat">
+          <Image src={teclat} alt="" widths={[380, 760]} sizes="13vw" />
+        </span>
+      </span>
+    </p>
+  </div>
+</section>

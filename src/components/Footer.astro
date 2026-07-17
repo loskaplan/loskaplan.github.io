@@ -1,0 +1,28 @@
+---
+import { site } from '../config';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-fons="fosc">
+  <div class="wrap site-footer__inner">
+    <a class="site-footer__email" href={`mailto:${site.email}`}>{site.email}</a>
+
+    <div class="site-footer__dades">
+      <address>
+        {site.address.street}<br />
+        {site.address.city}
+      </address>
+
+      <p>
+        Associació sense ànim de lucre<br />
+        inscrita a Terrassa el 24 de gener de 2025
+      </p>
+    </div>
+
+    <p class="site-footer__legal">
+      © {year} {site.name}. Els fins i les activitats descrits en aquesta web són els
+      recollits als estatuts de l’associació.
+    </p>
+  </div>
+</footer>

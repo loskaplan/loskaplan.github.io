@@ -1,0 +1,89 @@
+/* Switzer — Fontshare. Llicència gratuïta per a ús comercial (Indian Type Foundry).
+   Fitxers autoallotjats: cap petició a un servidor extern. */
+
+/* El punt volat de Switzer té un avanç de 0,572 em —tant com una «o»—, quan a la
+   resta de tipografies va entre 0,215 i 0,364. Amb Switzer, «col·laboració» es llegeix
+   «col · laboració», i com que el webfont no porta la funció OpenType `locl`, la
+   tipografia no resol mai l'ela geminada pel seu compte.
+   Es podria escriure amb «ŀ» (U+0140), que Switzer dibuixa bé, però és un caràcter de
+   compatibilitat: trencaria el Ctrl+F i el copiar i enganxar. Millor deixar el text amb
+   el caràcter correcte (U+00B7) i desviar-ne només el dibuix a una tipografia del
+   sistema. Si cap no hi és, es cau a Switzer i tornem al punt volat ample: lleig, però
+   llegible. */
+@font-face {
+  font-family: 'Interpunct';
+  src:
+    local('Helvetica Neue'),
+    local('Arial'),
+    local('Roboto'),
+    local('Segoe UI'),
+    local('Liberation Sans');
+  unicode-range: U+00B7;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/switzer-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/switzer-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/switzer-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/switzer-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Display editorial: la serif clàssica per a l’art, la pixelada per a la tecnologia.
+   Només es fan servir a la secció de tancament de la portada. */
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-400i.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('/fonts/pixelify-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('/fonts/pixelify-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

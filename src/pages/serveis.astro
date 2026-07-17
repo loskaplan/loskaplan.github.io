@@ -1,0 +1,17 @@
+---
+import { getEntry } from 'astro:content';
+import MarkdownPage from '../layouts/MarkdownPage.astro';
+import SetLinies from '../components/SetLinies.astro';
+import Banda from '../components/Banda.astro';
+
+import serveis from '../assets/serveis.jpg';
+
+const entry = await getEntry('pagines', 'serveis');
+if (!entry) throw new Error('Falta src/content/pagines/serveis.md');
+---
+
+<MarkdownPage entry={entry}>
+  {/* Unes mans sobre una taula de mescles en un directe: és literalment què fem. */}
+  <Banda slot="obertura" src={serveis} />
+  <SetLinies slot="ample" />
+</MarkdownPage>

@@ -1,0 +1,25 @@
+---
+import { getEntry } from 'astro:content';
+import MarkdownPage from '../layouts/MarkdownPage.astro';
+import { site } from '../config';
+
+const entry = await getEntry('pagines', 'contacte');
+if (!entry) throw new Error('Falta src/content/pagines/contacte.md');
+---
+
+<MarkdownPage entry={entry} band={false}>
+  <div class="contact-grid">
+    <div class="contact-block">
+      <h2>Correu</h2>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+
+    <div class="contact-block">
+      <h2>On som</h2>
+      <address>
+        {site.address.street}<br />
+        {site.address.city}
+      </address>
+    </div>
+  </div>
+</MarkdownPage>

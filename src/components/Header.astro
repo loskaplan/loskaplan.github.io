@@ -1,0 +1,166 @@
+---
+import { site } from '../config';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const enllaços = [{ href: '/', label: 'Inici' }, ...site.nav];
+---
+
+{/* Sentinella d'1px abans de la capçalera: quan surt de pantalla vol dir que hem
+    començat a baixar, i la capçalera es compacta. Un observador ho detecta sense
+    escoltar l'scroll. */}
+<div class="header-sentinel" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <img src="/logo-mark.png" alt="" width="28" height="28" />
+      {/* El text es queda al DOM sempre: en compactar només s'amaga visualment. Si
+          s'esborrés, l'enllaç i el botó es quedarien sense nom per a un lector de
+          pantalla i serien dues icones mudes. */}
+      <span class="brand__nom">{site.name}</span>
+    </a>
+
+    {/* Un <button> de debò, amb aria-expanded: un lector de pantalla ha de saber que
+        obre alguna cosa i si està obert. */}
+    <button class="menu-toggle label" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="menu-toggle__text">Menú</span>
+      <span class="meter" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+{/* <dialog> nadiu amb showModal(): la trampa de focus, l'Escape per tancar, el fons
+    inert i el retorn del focus al botó els fa el navegador. Fer-ho a mà és on
+    aquests menús es trenquen.
+    El botó de tancar va A DINS: amb showModal() tot el que queda fora del diàleg
+    esdevé inert, i el de la capçalera es veuria però no es podria clicar. */}
+<dialog class="menu" id="menu" aria-label="Menú principal">
+  <div class="menu__bar">
+    <a class="brand brand--inverse" href="/">
+      <img src="/logo-mark.png" alt="" width="28" height="28" />
+      {site.name}
+    </a>
+
+    <button class="menu-toggle menu-toggle--close label" type="button" data-tanca>
+      Tanca
+      <span class="meter" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="menu__panel">
+    <div class="menu__inner">
+      <nav aria-label="Principal">
+        <ul class="menu__list">
+          {
+            enllaços.map((item) => (
+              <li>
+                <a
+                  class="menu__link"
+                  href={item.href}
+                  aria-current={path === item.href ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="menu__foot">
+        <p class="label">Escriu-nos</p>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script is:inline>
+  (function () {
+    var header = document.querySelector('.site-header');
+    var sentinella = document.querySelector('.header-sentinel');
+    if (!header || !sentinella || !('IntersectionObserver' in window)) return;
+
+    // 1. Compactar: quan la sentinella del capdamunt surt de pantalla, hem baixat.
+    new IntersectionObserver(
+      function (e) {
+        header.classList.toggle('site-header--compacta', !e[0].isIntersecting);
+      },
+      { threshold: 0 }
+    ).observe(sentinella);
+
+    // 2. Invertir: la capçalera creua seccions de paper i seccions gairebé negres. Es
+    //    marca una franja de detecció centrada al mig de la capçalera; la secció que la
+    //    creua és la que hi ha al darrere.
+    //    La franja fa 4px i no 1: amb 1px, una secció que comencés just al píxel del
+    //    costat no la tocava mai i la capçalera no s'invertia. Un llindar d'un píxel és
+    //    una moneda a l'aire. Cal refer-la en canviar la mida de la finestra, perquè el
+    //    rootMargin va en píxels.
+    var GRUIX = 4;
+    var foscos = new Set();
+    var io;
+
+    function observa() {
+      if (io) io.disconnect();
+      foscos.clear();
+      var mig = header.offsetHeight / 2;
+      var dalt = Math.max(0, mig - GRUIX / 2);
+      var baix = Math.max(0, window.innerHeight - mig - GRUIX / 2);
+      io = new IntersectionObserver(
+        function (entrades) {
+          entrades.forEach(function (e) {
+            e.isIntersecting ? foscos.add(e.target) : foscos.delete(e.target);
+          });
+          header.classList.toggle('site-header--fosca', foscos.size > 0);
+        },
+        { rootMargin: -dalt + 'px 0px ' + -baix + 'px 0px' }
+      );
+      document.querySelectorAll('[data-fons="fosc"]').forEach(function (el) {
+        io.observe(el);
+      });
+    }
+
+    /* Aquest <script> corre aquí mateix, i la capçalera va abans que <main>: quan
+       s'executa, les seccions encara no s'han parsejat i querySelectorAll no troba res.
+       Cal esperar que el document estigui llest o l'observador no vigila ningú. */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', observa);
+    } else {
+      observa();
+    }
+
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(observa, 150);
+    });
+  })();
+
+  (function () {
+    var menu = document.getElementById('menu');
+    var toggle = document.querySelector('.site-header .menu-toggle');
+    if (!toggle || !menu || typeof menu.showModal !== 'function') return;
+
+    toggle.addEventListener('click', function () {
+      menu.showModal();
+      toggle.setAttribute('aria-expanded', 'true');
+    });
+
+    menu.querySelector('[data-tanca]').addEventListener('click', function () {
+      menu.close();
+    });
+
+    // El navegador dispara close() també amb Escape: revertim el botó passi el que
+    // passi, i el focus hi torna sol.
+    menu.addEventListener('close', function () {
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+
+    // Clic a la zona fosca de la dreta = tancar. El panell i la barra són fills del
+    // diàleg, així que si el clic té el diàleg mateix com a target és que ha caigut al
+    // buit. Sense geometria: no hi ha res a descuadrar-se.
+    menu.addEventListener('click', function (e) {
+      if (e.target === menu) menu.close();
+    });
+  })();
+</script>

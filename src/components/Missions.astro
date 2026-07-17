@@ -1,0 +1,151 @@
+---
+import { Image } from 'astro:assets';
+import Arrow from './Arrow.astro';
+
+import cultura from '../assets/cultura.jpg';
+import reflexio from '../assets/reflexio.jpg';
+import experimentacio from '../assets/experimentacio.jpg';
+
+/* Les tres frases surten de l'article 2 dels estatuts, no de la imaginació:
+ *  1 i 2 són els fins («promoure la cultura en qualsevol de les seves expressions i
+ *    fomentar la reflexió crítica sobre la intersecció entre art, creativitat,
+ *    pensament, tecnologia i societat»);
+ *  3 és l'activitat d'experimentació («donar suport a projectes que explorin noves
+ *    formes d'expressió i pensament»).
+ *
+ * Els salts de línia són escrits, no calculats. Abans les tres línies sortien de posar
+ * una mesura de 19ch i confiar que el text hi caigués just: a Chrome sí, a Safari no
+ * —resol el `ch` (l'amplada del glif «0» de la Switzer) amb una mètrica diferent, la
+ * caixa li surt més ampla i dues de les frases es quedaven en dues línies. Escrivint-les
+ * aquí no hi ha res a endevinar: tres línies són tres elements. */
+const missions = [
+  { linies: ['Promovem la cultura en', 'qualsevol de les seves', 'expressions'], foto: cultura },
+  { linies: ['Fomentem la reflexió', 'crítica sobre art,', 'tecnologia i societat'], foto: reflexio },
+  { linies: ['Donem suport a qui', 'explora noves formes', 'd’expressió'], foto: experimentacio },
+];
+---
+
+{/* L'ancoratge es fa amb un contenidor alt i una escena `sticky` a dins: el navegador
+    fa la feina i l'scroll segueix sent el de sempre. No hi ha cap listener d'scroll ni
+    res que segresti el gest; el teclat funciona igual. */}
+<section class="missions" data-fons="fosc">
+  <div class="missions__track">
+    <div class="missions__stage">
+      <div class="wrap missions__inner">
+        <div class="missions__fotos">
+          {
+            missions.map((m, i) => (
+              <div class="photo mission__foto" data-mission={i}>
+                <Image src={m.foto} alt="" widths={[540, 1080]} sizes="(min-width: 60rem) 32vw, 92vw" />
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="missions__text">
+          {/* Una llista ordenada de debò: per a un lector de pantalla això són tres
+              missions, no una animació. Les tres frases hi són sempre. */}
+          <ol class="missions__list">
+            {
+              missions.map((m, i) => (
+                <li class="mission" data-mission={i}>
+                  {/* Cada línia és un element. A partir de 60rem són blocs i cauen on
+                      diu el text; per sota tornen a ser inline i la frase es refon com
+                      un paràgraf normal —l'espai del mig hi és per això. */}
+                  <p class="mission__frase">
+                    {m.linies.map((linia, j) => (
+                      <>
+                        {j > 0 && ' '}
+                        <span class="mission__linia">
+                          {linia}
+                          {j === m.linies.length - 1 && <span class="mark" />}
+                        </span>
+                      </>
+                    ))}
+                  </p>
+                </li>
+              ))
+            }
+          </ol>
+
+          <div class="join">
+            <a class="btn" href="/qui-som">Llegir el manifest <Arrow /></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Un sentinella per missió, repartits per l'alçada del contenidor. El que creua el
+        mig de la finestra mana. Així no cal escoltar l'scroll ni calcular percentatges. */}
+    {missions.map((_, i) => <div class="missions__sentinel" data-i={i} aria-hidden="true" />)}
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var seccio = document.querySelector('.missions');
+    if (!seccio || !('IntersectionObserver' in window)) return;
+
+    var mou = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!mou) return; // Amb moviment reduït es queden les tres apilades i visibles.
+
+    seccio.classList.add('missions--animada');
+
+    var frases = seccio.querySelectorAll('.mission__frase');
+    var missions = seccio.querySelectorAll('.mission');
+    var fotos = seccio.querySelectorAll('.mission__foto');
+
+    /* El tecleig es fa partint la frase en spans, un per lletra, i encenent-los amb un
+       retard escalonat. Les lletres són les de debò i no es toca el text: el lector de
+       pantalla segueix llegint la frase sencera, perquè l'opacitat no amaga res de
+       l'arbre d'accessibilitat. Si es reescrivís el text amb JS lletra a lletra, sí que
+       el trencaria. */
+    frases.forEach(function (p) {
+      // El retard s'acumula d'una línia a l'altra: el tecleig ha de travessar la frase
+      // sencera, no reiniciar-se a cada línia.
+      var n = 0;
+      p.querySelectorAll('.mission__linia').forEach(function (linia) {
+        // .trim(): a la plantilla el text va amb salt de línia i sagnat al voltant, i
+        // sense retallar-lo es teclejaven els espais del codi font abans de la primera
+        // lletra.
+        var text = (linia.firstChild.textContent || '').trim();
+        var marca = linia.querySelector('.mark'); // Només la duu l'última línia.
+        linia.textContent = '';
+        text.split('').forEach(function (c) {
+          var s = document.createElement('span');
+          s.className = 'lletra';
+          s.textContent = c;
+          s.style.transitionDelay = n * 16 + 'ms';
+          n++;
+          linia.appendChild(s);
+        });
+        if (marca) linia.appendChild(marca);
+      });
+    });
+
+    function activa(i) {
+      missions.forEach(function (m, j) {
+        m.classList.toggle('is-actiu', j === Number(i));
+      });
+      fotos.forEach(function (f, j) {
+        f.classList.toggle('is-actiu', j === Number(i));
+      });
+    }
+
+    activa(0);
+
+    var io = new IntersectionObserver(
+      function (entrades) {
+        entrades.forEach(function (e) {
+          if (e.isIntersecting) activa(e.target.dataset.i);
+        });
+      },
+      // Una franja al mig de la finestra: el sentinella que la creua és el que mana.
+      { rootMargin: '-50% 0px -50% 0px' }
+    );
+
+    seccio.querySelectorAll('.missions__sentinel').forEach(function (s) {
+      io.observe(s);
+    });
+  })();
+</script>

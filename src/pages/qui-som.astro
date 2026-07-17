@@ -1,0 +1,20 @@
+---
+import { getEntry } from 'astro:content';
+import MarkdownPage from '../layouts/MarkdownPage.astro';
+import Cruilla from '../components/Cruilla.astro';
+import Banda from '../components/Banda.astro';
+
+import quisom from '../assets/quisom.jpg';
+
+const entry = await getEntry('pagines', 'qui-som');
+if (!entry) throw new Error('Falta src/content/pagines/qui-som.md');
+---
+
+{/* La cruïlla tanca aquesta pàgina i no una altra perquè el seu titular ja diu «Una
+    entitat per pensar la cruïlla entre art i tecnologia»: la frase hi és a casa. */}
+<MarkdownPage entry={entry}>
+  {/* Una silueta entre els focus: una persona plantada entre l'art i la màquina, que és
+      la cruïlla de què parla el titular. */}
+  <Banda slot="obertura" src={quisom} />
+  <Cruilla slot="ample" />
+</MarkdownPage>

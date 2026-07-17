@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Venn from '../components/Venn.astro';
+import Missions from '../components/Missions.astro';
+import { site } from '../config';
+
+import exposicio from '../assets/exposicio.jpg';
+import sintetitzador from '../assets/sintetitzador.jpg';
+import festival from '../assets/festival.jpg';
+import escena from '../assets/escena.jpg';
+---
+
+<Base title={site.name} description={site.description}>
+  <section class="broadsheet">
+    <div class="wrap">
+      <h1>
+        <span class="broadsheet__line">
+          <span class="broadsheet__words">Cultura, art</span>
+          <span class="photo broadsheet__fill">
+            <Image src={exposicio} alt="" widths={[600, 1200, 2400]} sizes="45vw" loading="eager" />
+          </span>
+        </span>
+
+        <span class="broadsheet__line broadsheet__line--flip">
+          <span class="broadsheet__words">i tecnologia</span>
+          <span class="photo broadsheet__fill">
+            <Image src={sintetitzador} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+          </span>
+        </span>
+
+        <span class="broadsheet__line">
+          <span class="broadsheet__words">en totes les</span>
+          <span class="photo broadsheet__fill">
+            <Image src={festival} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+          </span>
+        </span>
+
+        <span class="broadsheet__line broadsheet__line--flip">
+          <span class="broadsheet__words">seves formes</span>
+          <span class="photo broadsheet__fill">
+            <Image src={escena} alt="" widths={[600, 1200, 2400]} sizes="45vw" />
+          </span>
+        </span>
+      </h1>
+    </div>
+  </section>
+
+  <Missions />
+
+  <section class="venn reveal">
+    <div class="wrap venn__inner">
+      <Venn />
+      <div class="venn__text">
+        <p class="label">Els tres fins</p>
+        <h2>Tres finalitats que es creuen</h2>
+        {/* El paràgraf no torna a llistar els tres fins: ja els diu el diagrama del
+            costat. Diu què vol dir que es creuin, que és l’única cosa que el dibuix no
+            pot explicar. */}
+        <p class="lede">
+          L’article 2 dels estatuts en fixa tres. L’associació no en treballa cap per
+          separat: treballa on es creuen. Aquesta paraula —cruïlla— també és seva.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* La declaració va en groc i fa de signatura de tancament: és la franja d'accent que
+      al referent ancora el peu. Abans eren dues seccions —aquesta en negre i una banda
+      groga amb un botó «Escriu-nos»— i el botó sobrava: el correu a cos de titular del
+      peu, just a sota, ja és la mateixa crida dita millor. */}
+  <section class="declaration reveal">
+    <div class="wrap">
+      <p class="declaration__serif">La cultura de sempre</p>
+      <p class="declaration__pixel">amb les eines d’ara</p>
+    </div>
+  </section>
+</Base>

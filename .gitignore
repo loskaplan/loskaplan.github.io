@@ -1,0 +1,15 @@
+dist/
+node_modules/
+.astro/
+.DS_Store
+npm-debug.log*
+.env
+.env.production
+
+# Els originals sense tractar no es publiquen: `npm run fotos` en genera
+# les versions de src/assets/, que sí que van al repositori.
+photos/
+
+# Document de treball, no el fa servir el web. El repositori és públic (GitHub Pages
+# ho demana al pla gratuït) i els estatuts porten dades dels socis fundadors.
+assets/Estatutsv2.pdf

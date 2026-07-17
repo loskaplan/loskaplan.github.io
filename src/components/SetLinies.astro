@@ -1,0 +1,65 @@
+---
+/* Les set activitats de l'article 2 dels estatuts.
+ *
+ * NO enllacen enlloc, i és a propòsit: aquí SÓN el contingut de /serveis, no un índex
+ * cap a ell. Quan vivien a la portada duien fletxa i portaven a cada apartat d'aquesta
+ * mateixa pàgina; ara aquella pàgina és aquesta. Una fletxa que no va enlloc és una
+ * mentida, així que tampoc no n'hi ha.
+ * Si algun dia tornen a fer d'índex des d'una altra pàgina, cal recuperar l'enllaç i la
+ * fletxa —i comprovar les àncores, que Astro genera a partir dels encapçalaments. */
+const activitats = [
+  {
+    title: 'Producció d’esdeveniments culturals',
+    text: 'Organitzem festivals, concerts, exposicions i altres esdeveniments similars, amb la possibilitat de vendre entrades per finançar les activitats de l’associació i promoure la participació del públic.',
+  },
+  {
+    title: 'Formació i educació',
+    text: 'Dissenyem i impartim tallers, cursos i activitats educatives per estimular la creativitat i el pensament crític sobre els vincles entre tecnologia i art.',
+  },
+  {
+    title: 'Promoció de disciplines creatives',
+    text: 'Desenvolupem i donem suport a activitats vinculades amb la música, el disseny, la fotografia, el cinema i el multimèdia com a mitjans per fomentar el diàleg entre art i tecnologia.',
+  },
+  {
+    title: 'Interacció social',
+    text: 'Creem espais de trobada i diàleg entre artistes, tecnòlegs, acadèmics i públic general per generar xarxes de col·laboració que impulsin iniciatives culturals innovadores.',
+  },
+  {
+    title: 'Experimentació',
+    text: 'Donem suport a projectes que explorin noves formes d’expressió i pensament en la cruïlla de disciplines artístiques, tecnològiques i socials.',
+  },
+  {
+    title: 'Comercialització de productes',
+    text: 'Dissenyem, produïm i venem materials promocionals o altres productes vinculats a les activitats de l’associació: marxandatge, publicacions, obres artístiques i similars.',
+  },
+  {
+    title: 'Fons de sostenibilitat',
+    text: 'Destinem els ingressos generats per aquestes activitats a finançar projectes culturals, formatius i socials d’acord amb la missió de l’associació.',
+  },
+];
+---
+
+<section class="section dark reveal" data-fons="fosc">
+  <div class="wrap">
+    {/* Aquest text obria la pàgina, en paper. Va aquí perquè només parla de les set
+        línies: diu què tenen en comú abans que la taula les separi. Amunt, sota el
+        titular, era una promesa que trigava una pantalla a complir-se. */}
+    <p class="section__intro">
+      Per assolir les seves finalitats, Los Kaplan desenvolupa set línies d’activitat.
+      Totes comparteixen el mateix objectiu: obrir espais on l’art, la tecnologia i el
+      pensament crític es trobin.
+    </p>
+
+    <ul class="rows">
+      {
+        activitats.map((item, i) => (
+          <li class="row">
+            <span class="row__num label">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="row__title">{item.title}</h2>
+            <p class="row__text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

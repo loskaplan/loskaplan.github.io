@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+---
+
+<Base title="Pàgina no trobada" description="Aquesta pàgina no existeix.">
+  <div class="wrap">
+    <div class="page-head">
+      <p class="label">Error 404</p>
+      <h1>Aquesta pàgina no existeix<span class="mark"></span></h1>
+      <p class="lede">
+        Pot ser que l’enllaç sigui antic o que hi hagi una errada a l’adreça.
+      </p>
+      <p style="margin-top: 2rem">
+        <a class="btn" href="/">Torna a l’inici <Arrow /></a>
+      </p>
+    </div>
+  </div>
+</Base>

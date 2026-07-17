@@ -1,0 +1,41 @@
+---
+/* Els tres fins de l'article 2 dels estatuts, dibuixats com el que són: tres cercles
+ * que se solapen. La paraula de l'associació és «cruïlla», que és literalment una
+ * intersecció, i és on cau el groc.
+ *
+ * L'SVG porta títol i descripció perquè un lector de pantalla pugui explicar-lo: un
+ * diagrama sense alternativa textual no diu res a qui no el veu. */
+---
+
+<svg viewBox="0 0 620 560" role="img" aria-labelledby="venn-title venn-desc">
+  <title id="venn-title">Els tres fins de l'associació</title>
+  <desc id="venn-desc">
+    Tres cercles que se solapen: promoció cultural i reflexió crítica, foment de
+    disciplines artístiques i creatives, i promoció econòmica i comercial. Al centre,
+    on els tres es creuen, hi ha la cruïlla.
+  </desc>
+
+  <g class="venn__circle">
+    <circle cx="228" cy="205" r="175"></circle>
+    <circle cx="392" cy="205" r="175"></circle>
+    <circle cx="310" cy="348" r="175"></circle>
+  </g>
+
+  <text class="venn__label" x="150" y="150" text-anchor="middle">
+    <tspan x="150" dy="0">Promoció</tspan>
+    <tspan x="150" dy="27">cultural</tspan>
+  </text>
+
+  <text class="venn__label" x="470" y="150" text-anchor="middle">
+    <tspan x="470" dy="0">Disciplines</tspan>
+    <tspan x="470" dy="27">artístiques</tspan>
+  </text>
+
+  <text class="venn__label" x="310" y="480" text-anchor="middle">
+    <tspan x="310" dy="0">Sosteniment</tspan>
+    <tspan x="310" dy="27">econòmic</tspan>
+  </text>
+
+  <circle class="venn__core-dot" cx="310" cy="243" r="7"></circle>
+  <text class="venn__core" x="310" y="285" text-anchor="middle">la cruïlla</text>
+</svg>

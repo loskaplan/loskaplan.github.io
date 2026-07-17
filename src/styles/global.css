@@ -1,0 +1,1322 @@
+/* Sistema visual de Los Kaplan.
+   Estructura editorial inspirada en newformcap.com: titulars monumentals que les
+   fotos interrompen, microetiquetes en versaletes, fotografia monocroma i un únic
+   color d'accent, que aquí és el groc de la marca en lloc del seu verd neó. */
+
+/* Paleta: el sistema de New Form amb el to rotat −56,7° en OKLCH, del seu verd
+   (H 144,7°) al nostre groc (H 88°), preservant lluminositat i croma. Per això els
+   neutres no són grisos purs sinó que porten un sesgo càlid gairebé imperceptible cap
+   a l'accent —croma 0,008–0,03—: és el que lliga la pàgina i el que fa que el groc
+   sembli l'únic color de debò. Vegeu design/tailwind-theme.css. */
+:root {
+  --accent: #ffc700; /* L'únic color viu de la pàgina */
+  --accent-soft: #b9ac83; /* Suport i ombra del botó. No ascendir mai a botó */
+  --accent-pale: #e5dab6;
+  --accent-shade: #b9ac8366;
+
+  --ink: #161511; /* Gairebé negre, sesgo càlid. Titulars i superfície fosca */
+  --ink-2: #292720;
+  --ink-soft: #635d4a; /* Text auxiliar i etiquetes apagades */
+  --ink-faint: #1615111a;
+
+  --paper: #fffdf7; /* Mai #ffffff: el to càlid és el que fa que sembli paper */
+  --paper-dim: #d3cec2; /* Text clar sobre fons foscos */
+  --paper-mute: #908c81; /* Gris apagat sobre fons foscos: el mateix to i croma que
+                            --paper-dim amb la L baixada a 0,64. 5,44:1 sobre --ink */
+
+  --max: 1400px;
+  --measure: 58ch;
+  --header-h: 4.75rem; /* Alçada de la capçalera enganxada. La fa servir scroll-padding */
+  --gap-section: clamp(4rem, 9vw, 7.5rem);
+  --radius-img: 14px;
+  --radius-btn: 5px;
+
+  /* 'Interpunct' va primer però només cobreix U+00B7: vegeu fonts.css. */
+  --sans: 'Interpunct', 'Switzer', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Les dues cares del display editorial. Només a la secció de tancament. */
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --pixel: 'Pixelify Sans', ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  /* El sistema depèn del salt entre el cos petit i el display enorme: no pugis d'aquí. */
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+main {
+  flex: 1;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+/* Tipografia -------------------------------------------------------------- */
+
+.display,
+h1,
+h2 {
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* Microetiquetes: 11px en versaletes. Aquí la micro-tipografia fa la feina que
+   en altres webs fan les caixes i les vores. */
+.label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  line-height: 1;
+}
+
+.lede {
+  font-size: 1.0625rem;
+  max-width: var(--measure);
+  color: var(--ink-soft);
+}
+
+/* Marca d'accent: el subratllat groc que tanca una frase. */
+.mark {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.1em;
+  background: var(--accent);
+  vertical-align: 0.08em;
+  margin-left: 0.12em;
+}
+
+/* Fotografia -------------------------------------------------------------- */
+
+/* Totes les fotos comparteixen el mateix tractament —monocrom amb un sesgo càlid
+   mínim— però no es fa aquí: ve cuit des de `npm run fotos`. Fer-ho amb filter +
+   mix-blend-mode obligava el navegador a recompondre tres bandes de 2400px a cada
+   frame i deixava la pàgina sense pintar. Vegeu scripts/fotos.mjs. */
+.photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-img);
+  background: var(--ink-2);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Trama de punts, com una foto impresa en paper de diari. Va aquí i no cuita a la
+   imatge perquè així els punts són sempre de 3px de pantalla, nets a qualsevol mida.
+   És una capa plana amb opacitat, sense mix-blend-mode: el navegador la rasteritza un
+   cop i no li costa res. */
+.photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--ink) 0.5px, transparent 0.6px);
+  background-size: 3px 3px;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* Botons ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9375rem 1.5rem;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  border-radius: var(--radius-btn);
+  text-decoration: none;
+  /* L'elevació viu només al botó d'acció, i l'ombra sempre va tenyida de groc. */
+  box-shadow: 0 8px 24px -6px var(--accent-shade);
+  transition: transform 140ms ease;
+}
+
+.btn svg {
+  transition: transform 140ms ease;
+}
+
+.btn:hover svg {
+  transform: translateX(4px);
+}
+
+.btn--ink {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn svg {
+    transition: none;
+  }
+  .btn:hover svg {
+    transform: none;
+  }
+}
+
+/* Capçalera --------------------------------------------------------------- */
+
+/* Sticky, no fixed: així ocupa el seu lloc al capdamunt i no cal compensar-ne l'alçada
+   amb un coixí sota. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  transition: color 200ms ease;
+}
+
+.header-sentinel {
+  height: 1px;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  min-height: var(--header-h);
+  padding-block: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Sobre les seccions gairebé negres la capçalera s'inverteix. Sense això, en creuar-les
+   la tinta desapareixeria damunt del negre. */
+.site-header--fosca {
+  color: var(--paper);
+}
+
+/* En baixar es queda només el logo i el vúmetre. El text no s'esborra: s'amaga
+   visualment, perquè si no l'enllaç i el botó es quedarien sense nom accessible i serien
+   dues icones mudes. */
+.site-header--compacta .brand__nom,
+.site-header--compacta .menu-toggle__text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site-header--compacta .site-header__inner {
+  padding-block: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header__inner {
+    transition: none;
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.brand img {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 3px;
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: none;
+  border: 0;
+  padding: 0.25rem 0;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Tres barres, com un vúmetre: on newformcap hi posa un tíquer de borsa, aquí hi va el
+   so. L'única cosa groga de la capçalera. */
+.meter {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 0.9rem;
+}
+
+.meter i {
+  width: 3px;
+  background: var(--accent);
+}
+
+.meter i:nth-child(1) {
+  height: 60%;
+}
+.meter i:nth-child(2) {
+  height: 100%;
+}
+.meter i:nth-child(3) {
+  height: 35%;
+}
+
+/* Menú --------------------------------------------------------------------- */
+
+/* El diàleg ocupa tota la finestra i és transparent: el panell fosc només n'agafa una
+   part i per la resta es veu la pàgina, enfosquida. Així la barra de dalt pot creuar de
+   punta a punta i el botó de tancar cau a la dreta del tot, com al referent. */
+.menu {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--paper);
+  overflow: hidden;
+}
+
+.menu::backdrop {
+  background: #161511cc;
+}
+
+.menu__bar {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.brand--inverse {
+  color: var(--paper);
+}
+
+.menu__panel {
+  width: min(92vw, 46rem);
+  height: 100%;
+  background: var(--ink);
+}
+
+.menu__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(2.5rem, 6vh, 4.5rem);
+  height: 100%;
+  padding: clamp(2rem, 6vw, 4.5rem);
+}
+
+.menu__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: clamp(0.25rem, 1.5vh, 1rem);
+}
+
+.menu__link {
+  display: inline-block;
+  font-size: clamp(2.5rem, 7vw, 5.25rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+  color: var(--paper);
+}
+
+/* La pàgina on ets va en blanc; la resta, en gris. L'estat actiu és la tipografia, no
+   un subratllat. */
+.menu__link:not([aria-current='page']) {
+  color: var(--paper-mute);
+  transition: color 160ms ease;
+}
+
+.menu__link:not([aria-current='page']):hover,
+.menu__link:not([aria-current='page']):focus-visible {
+  color: var(--paper);
+}
+
+.menu__foot {
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid #fffdf726;
+}
+
+.menu__foot .label {
+  color: var(--paper-dim);
+  margin-bottom: 0.75rem;
+}
+
+.menu__foot a {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  text-underline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu__link {
+    transition: none;
+  }
+}
+
+/* Portada: el titular que les fotos parteixen -------------------------------- */
+
+/* El titular va sol: cap entradeta, cap botó, cap rètol. És un cartell, i el que el fa
+   funcionar és l'aire que té a sobre i a sota.
+   L'espai va en vh i no en rem perquè el que ha de quadrar és la proporció amb la
+   pantalla: capçalera, aire, bloc i aire han de sumar una pantalla justa, de manera que
+   el titular s'aguanti sol i la secció següent no espiï per sota. */
+.broadsheet {
+  padding-block: clamp(2.5rem, 17vh, 10rem) clamp(3rem, 19vh, 11rem);
+}
+
+/* El bloc no arriba a les vores: va centrat i amb marge de debò als costats. És el que
+   el fa respirar —el de newformcap ocupa un 75% de la finestra i el nostre n'ocupava un
+   91%—, i el que el converteix en un objecte damunt del paper en comptes d'un text que
+   toca les cantonades.
+   L'amplada i el cos baixen ALHORA: les paraules no encongeixen (flex: 0 0 auto), de
+   manera que si s'estreny la caixa sense abaixar el cos, les fotos es queden sense
+   sobrant i el bloc se'n va per fora. */
+.broadsheet h1 {
+  font-size: clamp(2.75rem, 9vw, 8.5rem);
+  max-width: min(80vw, 1060px);
+  margin-inline: auto;
+}
+
+/* Les línies i les fotos són spans dins de l'h1: així el titular continua sent un sol
+   encapçalament per a un lector de pantalla, però visualment queda compost.
+
+   Cada línia és una fila i la foto s'endú el sobrant (flex: 1). Per això el bloc queda
+   justificat a banda i banda sigui quina sigui la finestra: el text mai no arriba
+   igual de lluny —«Cultura, art» i «en totes les» no fan el mateix— i és la foto qui
+   quadra la caixa. A newformcap les línies queden desiguals (mesurat: 723, 910, 796 i
+   670px) i les fotos només tapen el buit; així el bloc s'ajusta tot sol. */
+.broadsheet__line {
+  display: flex;
+  align-items: stretch;
+  gap: 0.16em;
+}
+
+.broadsheet__words {
+  flex: 0 0 auto;
+}
+
+.broadsheet__fill {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-block: 0.07em;
+}
+
+/* La foto canvia de costat a cada línia: manté el ritme i evita una vora massa recta. */
+.broadsheet__line--flip {
+  flex-direction: row-reverse;
+}
+
+/* En pantalla estreta no hi ha sobrant per repartir: el text ja omple la línia i la
+   foto quedaria una tira de dos dits. Tornen a ser bandes senceres entre línies. */
+@media (max-width: 48rem) {
+  .broadsheet__line {
+    display: block;
+  }
+
+  .broadsheet__fill {
+    display: block;
+    height: 22vw;
+    margin-block: 0.6rem;
+  }
+}
+
+/* Tancament editorial: la tipografia diu el que diu la frase ---------------- */
+
+.editorial {
+  padding-block: var(--gap-section);
+}
+
+/* El cos va topat a 4.5rem, no més: a 6.5rem la frase no cabia ni en 1400px i
+   envoltava sola, i llavors les fotos queien on volien —una acabava orfe en una
+   línia per a ella—. Les roturies es decideixen aquí, amb .editorial__line. */
+.editorial__statement {
+  font-size: clamp(1.75rem, 5.2vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  margin-top: 1.5rem;
+}
+
+.editorial__line {
+  display: block;
+}
+
+.editorial__line + .editorial__line {
+  margin-top: 0.25em;
+}
+
+/* L'art, en una serif clàssica. Puja un 10%: a igual cos, l'alçada de la x d'una
+   serif d'aquest tall és menor que la de la grotesca i es veuria petita. */
+.editorial__serif {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+}
+
+/* La tecnologia, en píxels. Les cares de mapa de bits dibuixen gran: cal
+   abaixar-les una mica perquè facin el mateix cos òptic que la resta. */
+.editorial__pixel {
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: 0.82em;
+  letter-spacing: -0.02em;
+}
+
+/* Les fotos van dins de la frase, entre les paraules, no al costat. Cadascuna té una
+   mida, una proporció i una alçada diferents: escampades, com en una composició
+   impresa, no alineades en una graella. */
+.editorial__tile {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0.22em;
+}
+
+.editorial__tile--sala {
+  width: clamp(2.75rem, 5vw, 4.5rem);
+  aspect-ratio: 3 / 4;
+  transform: translateY(-0.06em);
+}
+
+.editorial__tile--taller {
+  width: clamp(5rem, 11vw, 9.5rem);
+  aspect-ratio: 16 / 9;
+  transform: translateY(0.08em);
+}
+
+.editorial__tile--teclat {
+  width: clamp(6rem, 13vw, 11.5rem);
+  aspect-ratio: 16 / 9;
+  transform: translateY(-0.1em);
+}
+
+/* En pantalla estreta no hi caben tres peces: la segona i la tercera acabaven
+   apilades una damunt de l'altra i allò semblava un munt, no una composició.
+   Amb dues, la frase continua dient el que ha de dir. Són decoratives (alt=""),
+   així que no es perd res. */
+@media (max-width: 48rem) {
+  .editorial__tile--teclat {
+    display: none;
+  }
+}
+
+/* Seccions fosques -------------------------------------------------------- */
+
+/* El pas del paper al negre es fa amb un arc ample i baix, no amb un tall recte.
+   Els dos radis horitzontals sumen 200%, i el navegador els escala a 50% cadascun:
+   el resultat és una cúpula d'una vora a l'altra. */
+.dark {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: var(--gap-section);
+  border-radius: 100% 100% 0 0 / 5vw 5vw 0 0;
+}
+
+.dark .lede {
+  color: var(--paper-dim);
+}
+
+.dark .label {
+  color: var(--accent);
+}
+
+.statement {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 60rem) {
+  .statement {
+    grid-template-columns: 1.6fr 1fr;
+  }
+}
+
+.statement h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin-block: 1.5rem 2rem;
+}
+
+/* Escena ancorada de les tres missions ------------------------------------- */
+
+/* Per defecte —sense JS, o amb moviment reduït— les tres missions es veuen apilades i
+   senceres. L'ancoratge només s'activa quan el script hi posa .missions--animada, de
+   manera que si el JS no arriba no es perd res. */
+.missions {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: var(--gap-section);
+  border-radius: 100% 100% 0 0 / 5vw 5vw 0 0;
+}
+
+.missions__inner {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+/* Foto a l'esquerra, text a la dreta trepitjant-la una mica: les dues ocupen la mateixa
+   fila i el text va al damunt.
+   La foto no toca la vora: entra un 7% més endins. Mesurat a newformcap, la seva comença
+   al 13,8% de la finestra i n'ocupa el 26,7%; la nostra en començava al 7% i per això es
+   veia enganxada. */
+@media (min-width: 60rem) {
+  .missions__inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.7fr);
+    gap: 0;
+    padding-inline-start: 10%;
+  }
+
+  .missions__fotos {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .missions__text {
+    grid-column: 2;
+    grid-row: 1;
+    z-index: 1;
+    margin-left: -7%;
+  }
+}
+
+.missions__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* El cos és el que és perquè les nostres frases són llargues: «Promovem la cultura en
+   qualsevol de les seves expressions» fa 57 caràcters i la de newformcap en fa 40. Ells
+   tenen el mateix cos (72px, mesurat) i els hi caben tres línies en 509px; a nosaltres,
+   no. Amb aquest text, tres línies + 72px + una mesura estreta són incompatibles: cal
+   triar-ne dues. Aquí es conserven les tres línies i la mesura estreta.
+   La mesura només actua a mòbil, on la frase es refon sola. A partir de 60rem els salts
+   són escrits i no hi ha res a mesurar: capar-la només podria afegir un salt no volgut. */
+.mission__frase {
+  font-size: clamp(1.75rem, 4.2vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  max-width: 19ch;
+  margin: 0;
+}
+
+.mission__linia {
+  display: inline;
+}
+
+@media (min-width: 60rem) {
+  .mission__frase {
+    max-width: none;
+  }
+
+  .mission__linia {
+    display: block;
+  }
+}
+
+.missions__fotos {
+  display: grid;
+  gap: 1rem;
+}
+
+/* La proporció va en una variable perquè l'escena ancorada l'ha de tornar a aplicar
+   només a la primera foto, i ha de seguir sent responsive. */
+.mission__foto {
+  --ratio: 4 / 3;
+  aspect-ratio: var(--ratio);
+}
+
+@media (min-width: 60rem) {
+  .mission__foto {
+    --ratio: 3 / 4;
+  }
+}
+
+.missions__sentinel {
+  display: none;
+}
+
+/* Amb JS i sense moviment reduït: el contenidor es fa alt i l'escena s'hi enganxa a
+   dins. El navegador fa l'ancoratge tot sol —no hi ha cap listener d'scroll— i les
+   frases es van rellevant a mesura que baixes. */
+.missions--animada .missions__track {
+  position: relative;
+  height: 300vh;
+}
+
+.missions--animada .missions__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.missions--animada .missions__list {
+  display: block;
+  position: relative;
+}
+
+.missions--animada .mission {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+/* La primera ocupa el lloc i marca l'alçada del bloc; la resta se li posen a sobre. */
+.missions--animada .mission:first-child {
+  position: relative;
+}
+
+.missions--animada .mission.is-actiu {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* El tecleig. Cada lletra és un span de debò amb la seva lletra a dins: l'opacitat no
+   amaga res del lector de pantalla, que segueix llegint la frase sencera.
+   Va per classe i no per `span` a seques: les línies també són spans i, si també
+   s'apaguessin, l'opacitat del pare i la de la lletra es multiplicarien i les tres línies
+   entrarien de cop en comptes de lletra a lletra. */
+.missions--animada .mission__frase .lletra {
+  opacity: 0;
+  transition: opacity 90ms linear;
+}
+
+.missions--animada .mission.is-actiu .mission__frase .lletra {
+  opacity: 1;
+}
+
+.missions--animada .missions__fotos {
+  position: relative;
+}
+
+/* `inset: 0` ja fixa l'amplada I l'alçada: deixar-hi també l'aspect-ratio és
+   sobre-restringir la caixa, i cada navegador ho resol a la seva manera —Chrome ignora
+   la proporció, Safari l'aplica i deixa que la caixa sobresurti per sota de la imatge,
+   i s'hi veu el fons de .photo com un rectangle. La primera sí que la conserva: és
+   l'única en flux i qui marca l'alçada del bloc. */
+.missions--animada .mission__foto {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.missions--animada .mission__foto:first-child {
+  position: relative;
+  aspect-ratio: var(--ratio);
+}
+
+.missions--animada .mission__foto.is-actiu {
+  opacity: 1;
+}
+
+.missions--animada .missions__sentinel {
+  display: block;
+  position: absolute;
+  inset-inline: 0;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.missions--animada .missions__sentinel[data-i='0'] {
+  top: 0;
+}
+.missions--animada .missions__sentinel[data-i='1'] {
+  top: 100vh;
+}
+.missions--animada .missions__sentinel[data-i='2'] {
+  top: 200vh;
+}
+
+/* Bloc de crida dins de la secció fosca. */
+.join {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+
+/* Declaració serif/píxel ---------------------------------------------------- */
+
+/* La primera línia en serif clàssica, la segona en píxels: la frase diu el que la
+   tipografia fa.
+   Va en groc perquè fa de signatura de tancament —la franja d'accent a sang que al
+   referent ancora el peu—. Abans hi havia aquesta secció en negre I una banda groga a
+   sota amb un botó; ara és una de sola. Porta l'arc perquè hi entra des del paper. */
+.declaration {
+  background: var(--accent);
+  color: var(--ink);
+  padding-block: clamp(4rem, 9vw, 7rem);
+  border-radius: 100% 100% 0 0 / 5vw 5vw 0 0;
+}
+
+.declaration p {
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+.declaration__serif {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 8.5vw, 7rem);
+}
+
+.declaration__pixel {
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: clamp(2rem, 6.8vw, 5.6rem);
+  padding-left: 6vw;
+}
+
+/* Diagrama dels tres fins --------------------------------------------------- */
+
+.venn {
+  padding-block: var(--gap-section);
+}
+
+.venn__inner {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+@media (min-width: 60rem) {
+  .venn__inner {
+    grid-template-columns: 1fr 1.15fr;
+  }
+}
+
+.venn svg {
+  width: 100%;
+  max-width: 34rem;
+  height: auto;
+  justify-self: center;
+}
+
+/* La columna de text va com la del referent, mesurat: titular a cos de display —no de
+   rètol de secció, que és el que hi havia i el deixava a 24px—, paràgraf en una columna
+   estreta i un espai de debò entre els dos, que abans era zero i es tocaven. */
+.venn__text h2 {
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-top: 1.25rem;
+}
+
+.venn__text .lede {
+  /* Estreta a propòsit: la seva fa 247px. Un paràgraf curt en columna estreta al costat
+     d'un titular gran és el que fa que el bloc respiri. */
+  max-width: 30ch;
+  margin-top: 2rem;
+}
+
+.venn__circle {
+  fill: var(--ink);
+  fill-opacity: 0.14;
+}
+
+.venn__label {
+  font-family: var(--serif);
+  font-size: 25px;
+  fill: var(--ink);
+  fill-opacity: 0.75;
+}
+
+/* La intersecció: l'única cosa en groc de tot el diagrama. */
+.venn__core {
+  font-family: var(--sans);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  fill: var(--ink);
+}
+
+.venn__core-dot {
+  fill: var(--accent);
+}
+
+/* En una sola columna el retrat 3:4 ocupa una pantalla sencera i trenca el ritme;
+   a partir de dues columnes ja hi cap vertical. */
+.statement .photo {
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 60rem) {
+  .statement .photo {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+/* Llista editorial d'activitats -------------------------------------------- */
+
+.section {
+  padding-block: var(--gap-section);
+}
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.section__head h2 {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+/* Entradeta que encapçala una llista fosca. Més estreta que el .measure general: ha de
+   quedar clar d'un cop d'ull que introdueix la taula, no que és una columna de text. */
+.section__intro {
+  font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
+  max-width: 44ch;
+  color: var(--paper-dim);
+  margin: 0 0 clamp(2.5rem, 5vw, 4rem);
+}
+
+.rows {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Cada fila és una caixa i tota ella és l'enllaç. La fletxa no és decoració: porta
+   a l'apartat corresponent de /serveis. Una fletxa que no va enlloc és una mentida. */
+.row {
+  display: grid;
+  gap: 0.5rem 2rem;
+  grid-template-columns: 1fr;
+  padding: 1.5rem;
+  border: 1px solid var(--ink-faint);
+  border-radius: var(--radius-img);
+  text-decoration: none;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+@media (min-width: 48rem) {
+  .row {
+    grid-template-columns: 2.5rem 1fr 1.2fr 1.5rem;
+    align-items: center;
+  }
+}
+
+.row:hover {
+  border-color: var(--ink);
+  background: #16151108;
+}
+
+.row__num {
+  color: var(--ink-soft);
+}
+
+.row__arrow {
+  color: var(--ink-soft);
+  justify-self: end;
+  transition: transform 140ms ease;
+}
+
+.row:hover .row__arrow {
+  transform: translateX(4px);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .row__arrow {
+    transition: none;
+  }
+  .row:hover .row__arrow {
+    transform: none;
+  }
+}
+
+/* Les set línies van sobre fons fosc. Les vores, els números i les fletxes estan
+   pensats per al paper —tots en tinta—, i sobre el negre desapareixerien: aquí es
+   giren. Si algun dia la secció torna al paper, s'esborra aquest bloc i prou. */
+.dark .row {
+  border-color: #fffdf726;
+}
+
+.dark .row:hover {
+  border-color: var(--paper);
+  background: #fffdf70a;
+}
+
+.dark .row__num,
+.dark .row__text,
+.dark .row__arrow {
+  color: var(--paper-mute);
+}
+
+.dark .row:hover .row__arrow {
+  color: var(--paper);
+}
+
+.row__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.row__text {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+/* Banda groga: la signatura que tanca cada pàgina abans del peu ------------- */
+
+.band {
+  background: var(--accent);
+  padding-block: clamp(3.5rem, 8vw, 6rem);
+}
+
+.band__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* 20ch perquè «Vols col·laborar-hi?» hi càpiga sense partir-se pel guionet. */
+.band h2 {
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  max-width: 20ch;
+}
+
+/* Pàgines de text --------------------------------------------------------- */
+
+.page-head {
+  padding-block: clamp(2rem, 5vw, 4rem) clamp(3rem, 7vw, 5rem);
+}
+
+.page-head h1 {
+  font-size: clamp(2.75rem, 8vw, 6.5rem);
+  max-width: 14ch;
+  margin-block: 1.25rem 1.75rem;
+}
+
+/* La foto d'obertura. 2:1 a la caixa i no a la imatge: reserva el lloc abans de
+   descarregar-la i la pàgina no salta. A mòbil s'aixeca cap a 3:2, que una banda tan
+   ampla en una pantalla estreta es queda en una escletxa de 60px d'alt. */
+.banda {
+  margin: 0 0 var(--gap-section);
+  aspect-ratio: 3 / 2;
+}
+
+@media (min-width: 48rem) {
+  .banda {
+    aspect-ratio: 2 / 1;
+  }
+}
+
+.prose {
+  max-width: var(--measure);
+  padding-bottom: var(--gap-section);
+}
+
+.prose > * + * {
+  margin-top: 1.125rem;
+}
+
+.prose h2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ink-faint);
+}
+
+.prose h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+}
+
+.prose h3 + p {
+  margin-top: 0.375rem;
+}
+
+.prose p {
+  color: var(--ink-soft);
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Contacte ---------------------------------------------------------------- */
+
+.contact-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ink-faint);
+}
+
+.contact-block h2 {
+  color: var(--ink-soft);
+  border-top: 0;
+  margin: 0 0 0.625rem;
+  padding-top: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.contact-block a,
+.contact-block address {
+  font-style: normal;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Peu --------------------------------------------------------------------- */
+
+.site-footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: clamp(3rem, 6vw, 4.5rem);
+  margin-top: auto;
+}
+
+/* Una graella de debò, no un flex amb wrap: abans el correu anava a width:100% i
+   l'adreça i les dades es repartien soltes amb space-between, de manera que res no
+   s'alineava amb res. Tot obre a la mateixa vora. */
+.site-footer__inner {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.site-footer__dades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem clamp(2rem, 6vw, 5rem);
+}
+
+/* El correu, a cos de titular: és tot el que li demanem al visitant. */
+.site-footer__email {
+  display: block;
+  font-size: clamp(1.5rem, 5.5vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  transition: color 140ms ease;
+}
+
+.site-footer__email:hover {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__email {
+    transition: none;
+  }
+}
+
+.site-footer address,
+.site-footer p {
+  font-style: normal;
+  font-size: 0.875rem;
+  color: var(--paper-dim);
+  line-height: 1.7;
+}
+
+.site-footer a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.site-footer__legal {
+  border-top: 1px solid #fffdf726;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  font-size: 0.75rem;
+  color: #fffdf78c;
+}
+
+/* Scroll snap -------------------------------------------------------------- */
+
+/* `proximity`, no `mandatory`. Amb mandatory, tota secció més alta que la finestra
+   queda a mig llegir: el navegador salta per damunt i no pots aturar-te al mig. I aquí
+   tres de vuit seccions són més altes que la pantalla en un mòbil —les set activitats
+   fan 2,39 pantalles—, de manera que mandatory se n'enduria justament el contingut que
+   més hi ha per llegir.
+   Amb proximity, les seccions curtes encaixen soles i per les llargues es passa de
+   llarg sense que res estiri. Ho fa el navegador: no hi ha cap listener d'scroll. */
+html {
+  scroll-snap-type: y proximity;
+  /* La capçalera va enganxada al capdamunt: sense descomptar-ne l'alçada, cada secció
+     enganxaria amb la seva vora amagada per sota. També val per als enllaços amb
+     àncora, com els de les set activitats cap a /serveis. */
+  scroll-padding-top: var(--header-h);
+}
+
+/* NOMÉS enganxen les seccions que caben en una pantalla. Aquesta és la regla, i no és
+   una preferència.
+   Una secció més alta que la finestra té els seus dos punts d'enganxada tan separats
+   que el navegador t'estira cap a un o cap a l'altre des de gairebé qualsevol punt del
+   mig: mesurat en escriptori, fins a 254px amunt o 269px avall enmig de les set
+   activitats. Justament el contingut amb més text de la web, i no t'hi podies aturar a
+   llegir. Amb `proximity` passa igual que amb `mandatory`, només que més tard.
+   Aquestes tres fan menys d'un terç de pantalla, no tenen res per llegir a dins i cap
+   punt seu queda lluny d'una vora: encaixen soles i no estiren mai.
+   La portada tampoc no enganxa: és on ja arribes, i el seu punt queda just sota la
+   capçalera —el navegador l'hi empenyia i el logo quedava fora de pantalla en carregar.
+   Si algun dia es vol enganxar-ho tot, primer cal que cada secció càpiga en una
+   pantalla; no n'hi ha prou de posar-hi la línia. */
+.declaration,
+.editorial,
+.band {
+  scroll-snap-align: start;
+}
+
+/* Amb el moviment reduït, res no ha de moure's sol sota el dit. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-snap-type: none;
+  }
+}
+
+/* Revelat en entrar a pantalla -------------------------------------------- */
+
+/* Només s'amaga res si hi ha JavaScript per tornar-ho a mostrar: la classe .js la
+   posa un script en línia al <head>. Si el JS no arriba o peta, el contingut es veu
+   igual. I amb el moviment reduït activat, no es mou res: apareix i prou. */
+/* Només opacitat, sense translateY. El scroll snap fa servir la caixa TRANSFORMADA per
+   calcular on enganxar: amb un translateY(14px), una secció encara no revelada tenia el
+   punt d'enganxada 14px avall, i en revelar-se el punt es movia sota els peus. Mesurat:
+   amb el desplaçament, l'enganxada queia 15px passada; sense, hi cau exacta. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+
+  .js .reveal.is-in {
+    opacity: 1;
+  }
+}
+
+/* Enllaç de salt ---------------------------------------------------------- */
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ink);
+  color: var(--accent);
+  padding: 0.75rem 1rem;
+  z-index: 10;
+}
+
+.skip:focus {
+  left: 0;
+}

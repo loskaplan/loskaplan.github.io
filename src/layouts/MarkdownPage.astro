@@ -1,0 +1,63 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from './Base.astro';
+import Arrow from '../components/Arrow.astro';
+
+interface Props {
+  entry: CollectionEntry<'pagines'>;
+  /* La banda groga de tancament sobra a /contacte: allà ja hi ha el correu. */
+  band?: boolean;
+}
+
+const { entry, band = true } = Astro.props;
+const { Content } = await render(entry);
+
+/* /serveis no té cos: tot el que hi havia ha pujat al titular o ha baixat a la taula.
+   Sense això, el .prose buit deixaria caure el seu padding entre el titular i la
+   secció fosca. No es pot resoldre amb :empty —els salts de línia de la plantilla ja
+   compten com a contingut. */
+const teCos = Boolean(entry.body?.trim()) || Astro.slots.has('default');
+---
+
+<Base title={entry.data.title} description={entry.data.description}>
+  <div class="wrap">
+    <div class="page-head">
+      <p class="label">{entry.data.title}</p>
+      <h1>{entry.data.heading}<span class="mark"></span></h1>
+      {entry.data.lede && <p class="lede">{entry.data.lede}</p>}
+    </div>
+
+    {/* Entre el titular i el cos: hi va la foto d'obertura. Dins del .wrap, així que
+        obre a la mateixa vora que el titular i que tota la resta de la pàgina. */}
+    <slot name="obertura" />
+
+    {
+      teCos && (
+        <div class="prose">
+          <Content />
+          <slot />
+        </div>
+      )
+    }
+  </div>
+
+  {/* Fora del .wrap i del .prose: per a blocs que necessiten tota l'amplada i portar
+      el seu propi contenidor. El slot per defecte, de sobre, va dins del .prose i
+      queda escanyat a 58 caràcters. */}
+  <slot name="ample" />
+
+  {
+    band && (
+      <section class="band">
+        <div class="wrap band__inner">
+          <h2>
+            Vols col·laborar-hi?<span class="mark" />
+          </h2>
+          <a class="btn btn--ink" href="/contacte">
+            Escriu-nos <Arrow />
+          </a>
+        </div>
+      </section>
+    )
+  }
+</Base>

@@ -1,0 +1,111 @@
+/* Los Kaplan — tema de Tailwind v4
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Broadsheet editorial en una sala groga.
+ *
+ * Aquest fitxer és l'equivalent del que Refero exporta per a newformcap.com, però
+ * amb la paleta de Los Kaplan. La web no fa servir Tailwind —va amb CSS pla i
+ * variables, a src/styles/global.css—: això és el sistema de disseny en format
+ * portable, per si es fa una altra peça (una landing d'un festival, un panell intern)
+ * i ha de mantenir la mateixa veu.
+ *
+ * Ús:  @import "tailwindcss";  @import "./tailwind-theme.css";
+ *
+ * D'on surten els colors: són els de New Form amb el to rotat −56,7° en OKLCH, del
+ * seu verd (H 144,7°) al nostre groc (H 88°), preservant lluminositat i croma. Per
+ * això els neutres no són grisos purs: porten un sesgo càlid gairebé imperceptible
+ * cap a l'accent. És el que lliga la pàgina i el que fa que el groc sembli l'únic
+ * color de debò.
+ */
+
+@theme {
+  /* Colors ─────────────────────────────────────────────────────────────────── */
+
+  /* Marca. L'únic color viu: farciment del botó d'acció, subratllat de la pàgina
+     activa i banda a peu de pàgina. Un cop de retolador sobre una pàgina monocroma. */
+  --color-accent: #ffc700;
+
+  /* Accents de suport, per a detalls decoratius i èmfasi de baixa freqüència.
+     No els ascendeixis mai a color del botó principal. */
+  --color-accent-soft: #b9ac83;
+  --color-accent-pale: #e5dab6;
+
+  /* Neutres. Gairebé negre amb sesgo càlid: és el que el lliga a l'accent. */
+  --color-ink: #161511; /* Titulars, peu de pàgina, superfície fosca dominant */
+  --color-ink-2: #292720; /* Superfície secundària, seccions amb vora */
+  --color-ink-soft: #635d4a; /* Peus de foto, text auxiliar, etiquetes apagades */
+  --color-paper-dim: #d3cec2; /* Text clar sobre fons foscos, etiquetes inverses */
+  --color-paper-mute: #908c81; /* Gris apagat sobre fons foscos: mateix to i croma que
+                                  paper-dim amb la L baixada. Enllaços inactius */
+  --color-paper: #fffdf7; /* Llenç. Mai #ffffff: el to càlid és el que fa que sembli paper */
+
+  /* Negre pur, només per a text sobre superfícies clares. */
+  --color-ink-true: #000000;
+
+  /* Tipografia ─────────────────────────────────────────────────────────────── */
+
+  /* Switzer (Fontshare, gratuïta per a ús comercial). Substitueix TWK Lausanne,
+     que és de pagament. Cal autoallotjar-la: vegeu src/styles/fonts.css.
+     'Interpunct' va primer i només cobreix U+00B7 —el punt volat de l'ela geminada—,
+     perquè Switzer el dibuixa amb un avanç de 0,572 em i «col·laboració» es llegiria
+     «col · laboració». */
+  --font-sans:
+    'Interpunct', 'Switzer', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  /* Escala. El sistema depèn del salt entre el cos petit i el display enorme. */
+  --text-label: 0.6875rem; /* Microetiquetes en versaletes */
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.09em;
+  --text-label--font-weight: 600;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+
+  --text-lede: 1.0625rem;
+  --text-lede--line-height: 1.6;
+
+  --text-heading-sm: 1.75rem;
+  --text-heading-sm--line-height: 1.1;
+  --text-heading-sm--letter-spacing: -0.02em;
+
+  --text-heading: 4rem;
+  --text-heading--line-height: 0.92;
+  --text-heading--letter-spacing: -0.04em;
+
+  --text-display: 11rem;
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.04em;
+
+  /* Forma i espai ──────────────────────────────────────────────────────────── */
+
+  --radius-btn: 5px; /* Rectangular, no pastilla: manté el to editorial */
+  --radius-img: 14px;
+
+  --container-page: 1400px; /* No el superis: el llenç ample amb tipografia enorme
+                               és el que fa que sembli un diari */
+
+  --spacing-section: 7.5rem;
+
+  /* L'elevació viu només al botó d'acció, i l'ombra sempre va tenyida de l'accent:
+     mai una ombra grisa damunt del groc. */
+  --shadow-accent: 0 8px 24px -6px --alpha(var(--color-accent-soft) / 40%);
+}
+
+/* Regles del sistema ────────────────────────────────────────────────────────
+ *
+ * SÍ
+ *   · El groc és l'únic color cromàtic. Tota la fotografia va en monocrom.
+ *   · Titular de portada en --text-display, amb el tracking tancat: és el que fa que
+ *     la tipografia es llegeixi com a tinta impresa.
+ *   · Les fotos interrompen el titular en bandes, no floten al seu costat.
+ *   · Microetiquetes de 11px en versaletes per a nav, botons i rètols: la
+ *     micro-tipografia fa la feina que en altres webs fan les caixes i les vores.
+ *   · Tanca cada pàgina amb la banda groga a sang abans del peu: és la signatura.
+ *
+ * NO
+ *   · Un segon color saturat. Només el groc.
+ *   · Pastilles (9999px) al botó principal.
+ *   · Cos de text per damunt de 18px: el sistema viu del salt entre el cos i el display.
+ *   · Ombres a targetes o blocs de contingut.
+ *   · Fotografia en color.
+ */
