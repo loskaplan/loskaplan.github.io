@@ -224,9 +224,23 @@ h2 {
   position: sticky;
   top: 0;
   z-index: 5;
-  transition: color 200ms ease;
+  transition:
+    color 200ms ease,
+    opacity 200ms ease;
   /* El color del vel de sota: el del FONS que hi ha al darrere, no el de la tinta. */
   --vel: var(--paper);
+}
+
+/* Amb el menú obert, la capçalera de la pàgina queda al darrere del fons però se segueix
+   veient, i el diàleg ja porta la seva pròpia barra amb logo i botó: hi ha dos logos a la
+   mateixa coordenada (48,17) i el «Menú» de la capçalera cau damunt del «Tanca» del
+   diàleg —mesurat, 1255-1341 contra 1264-1356. La de sota sobra.
+   Ho decideix l'[open] del diàleg amb :has() i no una classe posada des del JS: l'estat ja
+   el sap el navegador, i una classe paral·lela seria una segona font de veritat que es
+   desincronitza el dia que el menú es tanqui amb Escape o clicant a fora. */
+html:has(.menu[open]) .site-header {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Un vel, només quan la capçalera es compacta —que és quan hi ha contingut passant-li per
@@ -364,6 +378,13 @@ h2 {
 /* El diàleg ocupa tota la finestra i és transparent: el panell fosc només n'agafa una
    part i per la resta es veu la pàgina, enfosquida. Així la barra de dalt pot creuar de
    punta a punta i el botó de tancar cau a la dreta del tot, com al referent. */
+/* L'animació d'un <dialog> té una trampa: en tancar-lo el navegador li treu l'[open] i
+   el desenganxa de la capa superior al mateix instant, de manera que la sortida no
+   s'arriba a veure mai. `allow-discrete` fa que `display` i `overlay` esperin al final de
+   la transició en comptes de saltar al principi; el `@starting-style` és l'altra meitat,
+   perquè un element que acaba d'aparèixer no té estat previ des d'on transicionar i sense
+   ell l'entrada tampoc no es veuria.
+   Si el navegador no ho entén, el menú apareix de cop: exactament el que feia fins ara. */
 .menu {
   width: 100vw;
   max-width: none;
@@ -375,10 +396,28 @@ h2 {
   background: transparent;
   color: var(--paper);
   overflow: hidden;
+  transition:
+    display 420ms allow-discrete,
+    overlay 420ms allow-discrete;
 }
 
 .menu::backdrop {
   background: #161511cc;
+  opacity: 0;
+  transition:
+    opacity 320ms ease,
+    display 320ms allow-discrete,
+    overlay 320ms allow-discrete;
+}
+
+.menu[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .menu[open]::backdrop {
+    opacity: 0;
+  }
 }
 
 .menu__bar {
@@ -397,10 +436,42 @@ h2 {
   color: var(--paper);
 }
 
+/* El panell entra per l'esquerra, que és d'on ja penja: la maqueta ja el tenia arrambat
+   a aquella vora, i això només ho fa explícit. La corba surt de pressa i frena al final
+   —una porta que s'obre, no una capsa que apareix. */
 .menu__panel {
   width: min(92vw, 46rem);
   height: 100%;
   background: var(--ink);
+  transform: translateX(-100%);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu[open] .menu__panel {
+  transform: none;
+}
+
+@starting-style {
+  .menu[open] .menu__panel {
+    transform: translateX(-100%);
+  }
+}
+
+/* La barra de dalt («Tanca») viu fora del panell, damunt del fons: si no s'esvaís,
+   apareixeria de cop mentre el panell encara està entrant. */
+.menu__bar {
+  opacity: 0;
+  transition: opacity 260ms ease 120ms;
+}
+
+.menu[open] .menu__bar {
+  opacity: 1;
+}
+
+@starting-style {
+  .menu[open] .menu__bar {
+    opacity: 0;
+  }
 }
 
 .menu__inner {
@@ -418,6 +489,42 @@ h2 {
   margin: 0;
   display: grid;
   gap: clamp(0.25rem, 1.5vh, 1rem);
+}
+
+/* Els enllaços entren escalonats darrere del panell. El --i el posa la plantilla.
+   Pugen poc —mig caràcter— perquè el gest el fa el panell; això només és el reblat.
+   El retard només existeix quan el menú és obert: en tancar-lo, la regla de sota deixa de
+   valer, el retard torna a zero i marxen tots alhora. Un tancament escalonat es percep
+   com a lentitud, no com a gràcia. */
+.menu__list li {
+  opacity: 0;
+  transform: translateY(0.35em);
+  transition:
+    opacity 300ms ease,
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu[open] .menu__list li,
+.menu[open] .menu__foot {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(140ms + var(--i, 4) * 55ms);
+}
+
+.menu__foot {
+  opacity: 0;
+  transform: translateY(0.35em);
+  transition:
+    opacity 300ms ease,
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@starting-style {
+  .menu[open] .menu__list li,
+  .menu[open] .menu__foot {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
 }
 
 .menu__link {
@@ -460,9 +567,27 @@ h2 {
   text-underline-offset: 4px;
 }
 
+/* Amb moviment reduït no llisca ni puja res: el menú apareix i prou. Es conserven les
+   transicions de `display` i `overlay` perquè no són moviment —són el que evita que el
+   diàleg desaparegui abans no acabi el fos— i el fos del fons, que tampoc no ho és. */
 @media (prefers-reduced-motion: reduce) {
   .menu__link {
     transition: none;
+  }
+
+  .menu__panel,
+  .menu[open] .menu__panel {
+    transform: none;
+    transition: none;
+  }
+
+  .menu__list li,
+  .menu__foot,
+  .menu[open] .menu__list li,
+  .menu[open] .menu__foot {
+    transform: none;
+    transition: opacity 200ms ease;
+    transition-delay: 0ms;
   }
 }
 
@@ -733,10 +858,17 @@ h2 {
    triar-ne dues. Aquí es conserven les tres línies i la mesura estreta.
    La mesura només actua a mòbil, on la frase es refon sola. A partir de 60rem els salts
    són escrits i no hi ha res a mesurar: capar-la només podria afegir un salt no volgut. */
+/* El mínim, i no el vw, és el que es veu a tot el rang mòbil: el 4,2vw no supera els
+   1,75rem fins als 667px de finestra. A 28px la frase es quedava a 1,75× el cos i el
+   salt cap al display —que és de què viu el sistema— desapareixia. 34px la torna a fer
+   manar. A partir de 810px el 4,2vw ja va per damunt i l'escriptori no es toca. */
 .mission__frase {
-  font-size: clamp(1.75rem, 4.2vw, 3.5rem);
+  font-size: clamp(2.125rem, 4.2vw, 3.5rem);
   font-weight: 600;
-  line-height: 1.04;
+  /* 1,12 i no 1,04: a mòbil la frase deixa de ser tres línies escrites a cos de cartell
+     i passa a ser un paràgraf que s'envolta sol. L'1,04 hi feia que els descendents d'una
+     línia gairebé toquessin els accents de la següent. */
+  line-height: 1.12;
   letter-spacing: -0.035em;
   max-width: 19ch;
   margin: 0;
@@ -749,10 +881,26 @@ h2 {
 @media (min-width: 60rem) {
   .mission__frase {
     max-width: none;
+    line-height: 1.04;
   }
 
   .mission__linia {
     display: block;
+  }
+}
+
+/* Apilat, el text puja a trepitjar la foto: el mateix gest que a escriptori la fa entrar
+   pel costat. Es llegeix perquè les fotos de les missions van amb sostre de 116
+   (scripts/fotos.mjs) i el text hi va blanc: 4,5:1 garantit sobre el pitjor píxel. */
+@media (max-width: 60rem) {
+  .missions__inner {
+    gap: 0;
+  }
+
+  .missions__text {
+    position: relative;
+    z-index: 1;
+    margin-top: -2.5rem;
   }
 }
 
@@ -762,16 +910,14 @@ h2 {
 }
 
 /* La proporció va en una variable perquè l'escena ancorada l'ha de tornar a aplicar
-   només a la primera foto, i ha de seguir sent responsive. */
+   només a la primera foto.
+   Vertical a totes les mides. Abans a mòbil es girava a 4:3 per por que un retrat ocupés
+   tota la pantalla; mesurat, no hi arriba: a 375×812 el 3:4 fa 447px, un 55% de l'escena,
+   i el bloc sencer —foto, frase i botó— en suma 646 dels 812. La por venia d'una altra
+   regla (.statement), on el bloc sí que és tota la pàgina. */
 .mission__foto {
-  --ratio: 4 / 3;
+  --ratio: 3 / 4;
   aspect-ratio: var(--ratio);
-}
-
-@media (min-width: 60rem) {
-  .mission__foto {
-    --ratio: 3 / 4;
-  }
 }
 
 .missions__sentinel {
@@ -815,22 +961,20 @@ h2 {
   }
 }
 
+/* Les tres a la mateixa cel·la: la fila pren l'alçada de la MÉS ALTA i totes hi caben.
+   Abans la primera era l'única en flux i marcava l'alçada, i les altres dues hi anaven a
+   sobre amb position:absolute. Mentre les tres feien les mateixes línies, colava. Deixen
+   de fer-les quan la frase s'envolta sola —a mòbil— o quan canvia el text: la que creixi
+   vessa per sota i es menja el botó. Amb la graella no depèn de qui va primer. */
 .missions--animada .missions__list {
-  display: block;
-  position: relative;
+  display: grid;
 }
 
 .missions--animada .mission {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms ease;
-}
-
-/* La primera ocupa el lloc i marca l'alçada del bloc; la resta se li posen a sobre. */
-.missions--animada .mission:first-child {
-  position: relative;
 }
 
 .missions--animada .mission.is-actiu {
@@ -1022,6 +1166,18 @@ h2 {
 
   .venn__core {
     font-size: 34px;
+  }
+
+  /* Les dues de dalt tenen mig cercle per créixer; la de baix, no: seu on l'arc ja es
+     tanca, i el lloc que li queda s'estreny molt més de pressa del que creix la lletra.
+     Mesurat contra el cercle (cx 310, cy 348, r 175): a cos 25 la segona línia arribava
+     a 172,4 —hi era per 2,6 unitats—, i pujar a 33 la se'n duia a 186,7, onze unitats
+     FORA. Amb 25 amunt torna a 163: dins amb marge.
+     Va amb transform i no canviant la `y` perquè la y d'un <text> no és una propietat de
+     geometria i no es pot tocar des del CSS; el transform, en canvi, va en unitats del
+     viewBox i puja amb el diagrama. */
+  .venn__label--baix {
+    transform: translateY(-25px);
   }
 }
 
@@ -1303,7 +1459,11 @@ h2 {
 /* El mínim del clamp és el que es veu a tot el rang mòbil: el 5,5vw no supera els
    1,5rem fins als 436px de finestra. A 24px el correu deixava de ser un titular i es
    quedava a 1,5× el cos —i és l'única cosa que li demanem al visitant.
-   36px: «hola@loskaplan.cat» fa 305px dels 335 disponibles a 375px. */
+   36px està calibrat contra una adreça de 18 caràcters: «hola@loskaplan.org» fa 319px
+   dels 335 disponibles a 375px, o sigui un 95% ple. Queda poc marge i és a posta, però
+   lliga el cos a la llargada de l'adreça: «weareloskaplan@gmail.com», de 24 caràcters,
+   en faria 459 i se'n sortiria (mesurat). Si algun dia canvia el correu, això s'ha de
+   tornar a mirar —i la decisió de com resoldre-ho és de l'Aleix, no d'aquest fitxer. */
 .site-footer__email {
   display: block;
   font-size: clamp(2.25rem, 5.5vw, 4rem);

@@ -52,8 +52,11 @@ const enllaços = [{ href: '/', label: 'Inici' }, ...site.nav];
       <nav aria-label="Principal">
         <ul class="menu__list">
           {
-            enllaços.map((item) => (
-              <li>
+            enllaços.map((item, i) => (
+              /* L'índex mana el retard de l'entrada. Va aquí i no amb :nth-child al CSS
+                 perquè els enllaços surten de site.nav: si algun dia n'hi ha un més,
+                 s'escalona sol. */
+              <li style={`--i: ${i}`}>
                 <a
                   class="menu__link"
                   href={item.href}
