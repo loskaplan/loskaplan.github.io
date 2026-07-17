@@ -31,9 +31,8 @@ que aquests serveixin per reforçar la seva missió principal.
 ## Com ens organitzem
 
 L’Assemblea General és l’òrgan sobirà de l’associació i tots els seus membres en formen
-part per dret propi. La Junta Directiva —formada per la presidència, la secretaria i la
-tresoreria— regeix, administra i representa l’associació, i els seus càrrecs s’exerceixen
-gratuïtament.
+part per dret propi. La Junta Directiva (presidència, secretaria i tresoreria) regeix,
+administra i representa l’associació, i els seus càrrecs s’exerceixen gratuïtament.
 
 Poden formar part de Los Kaplan totes les persones físiques i jurídiques que, de manera
 lliure i voluntària, tinguin interès en les seves finalitats. Els membres tenen dret a
